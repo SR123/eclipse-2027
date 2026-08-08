@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Explore the total solar eclipse of 2 August 2027 across southern Spain, North Africa and the Middle East." />
+<title>Total Solar Eclipse · 2 August 2027 — Interactive Explorer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="styles-2027.css" />
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>🌑 Total Solar Eclipse — 2 August 2027</h1>
+    <p>Explore southern Spain and the eclipse path beyond. Click the map for local circumstances, or play the Moon's shadow.</p>
+  </div>
+  <div class="facts" aria-label="Key eclipse facts">
+    <div><span>6m 23s</span><label>Max totality</label></div>
+    <div><span>10:06 UT</span><label>Greatest eclipse</label></div>
+    <div><span>S. Spain · North Africa · Middle East</span><label>Path focus</label></div>
+  </div>
+</header>
+
+<main>
+  <section id="map-wrap" aria-label="Interactive eclipse map and timeline">
+    <div id="map" role="application" aria-label="Interactive map of the 2 August 2027 eclipse path"></div>
+
+    <div id="timebar">
+      <button id="playBtn" title="Play or pause" aria-label="Play eclipse animation" aria-pressed="false">▶</button>
+      <input type="range" id="timeSlider" min="0" max="1000" value="500" aria-label="Eclipse animation time" />
+      <div class="clock" aria-live="polite">
+        <strong id="clockUTC">--:--</strong> UT
+        <span id="clockLocal"></span>
+      </div>
+      <select id="speed" title="Animation speed" aria-label="Animation speed">
+        <option value="60">1 min/s</option>
+        <option value="300" selected>5 min/s</option>
+        <option value="600">10 min/s</option>
+        <option value="1800">30 min/s</option>
+      </select>
+    </div>
+  </section>
+
+  <aside id="panel">
+    <div class="card" id="loc-card">
+      <h2>📍 <span id="loc-name">Pick a location</span></h2>
+      <div class="coords">
+        <label>Lat <input id="latIn" type="number" step="0.001" min="-90" max="90" value="36.014"></label>
+        <label>Lon <input id="lonIn" type="number" step="0.001" min="-180" max="180" value="-5.605"></label>
+        <button id="goBtn">Go</button>
+      </div>
+      <div class="quick">
+        <span>Quick picks:</span>
+        <button data-lat="36.014" data-lon="-5.605" data-name="Tarifa, Spain">Tarifa</button>
+        <button data-lat="36.141" data-lon="-5.354" data-name="Gibraltar">Gibraltar</button>
+        <button data-lat="36.527" data-lon="-6.289" data-name="Cádiz, Spain">Cádiz</button>
+        <button data-lat="36.141" data-lon="-5.456" data-name="Algeciras, Spain">Algeciras</button>
+        <button data-lat="36.510" data-lon="-4.886" data-name="Marbella, Spain">Marbella</button>
+        <button data-lat="36.721" data-lon="-4.422" data-name="Málaga, Spain">Málaga</button>
+        <button data-lat="37.389" data-lon="-5.984" data-name="Seville, Spain">Seville</button>
+        <button data-lat="42.813" data-lon="-1.646" data-name="Pamplona, Spain">Pamplona</button>
+        <button data-lat="51.507" data-lon="-0.128" data-name="London, UK">London</button>
+        <button data-lat="55.676" data-lon="12.568" data-name="Copenhagen, Denmark">Copenhagen</button>
+        <button data-lat="35.889" data-lon="-5.321" data-name="Ceuta, Spain">Ceuta</button>
+        <button data-lat="35.759" data-lon="-5.834" data-name="Tangier, Morocco">Tangier</button>
+        <button data-lat="35.697" data-lon="-0.633" data-name="Oran, Algeria">Oran</button>
+        <button data-lat="25.687" data-lon="32.640" data-name="Luxor, Egypt">Luxor</button>
+      </div>
+      <div class="best">
+        <span>★ Featured totality locations
+          <label class="toggle"><input type="checkbox" id="bestToggle" checked> stars on map</label>
+        </span>
+        <div class="chiprow" id="bestChips"></div>
+        <div class="best-note">Illustrative starting points only — verify access, horizon, safety and forecast.</div>
+        <div class="reference-note"><span aria-hidden="true">●</span> Pamplona, London and Copenhagen are marked in blue for partial-eclipse comparison.</div>
+      </div>
+    </div>
+
+    <div class="card" id="info-card">
+      <div id="verdict" class="verdict" role="status" aria-live="polite">Select a location to begin.</div>
+      <table id="circ">
+        <tbody>
+          <tr><th>Coverage of Sun</th><td id="r-obsc">—</td></tr>
+          <tr><th>Magnitude</th><td id="r-mag">—</td></tr>
+          <tr class="sep"><th>Partial begins (C1)</th><td id="r-c1">—</td></tr>
+          <tr class="hl"><th>Totality begins (C2)</th><td id="r-c2">—</td></tr>
+          <tr><th>Maximum eclipse</th><td id="r-max">—</td></tr>
+          <tr class="hl"><th>Totality ends (C3)</th><td id="r-c3">—</td></tr>
+          <tr><th>Partial ends (C4)</th><td id="r-c4">—</td></tr>
+          <tr class="sep"><th>Duration of totality</th><td id="r-dur">—</td></tr>
+          <tr><th>Sun altitude at max</th><td id="r-alt">—</td></tr>
+          <tr><th>Sun direction at max</th><td id="r-az">—</td></tr>
+        </tbody>
+      </table>
+      <div class="tzrow">
+        Times shown in
+        <select id="tz" aria-label="Displayed time zone">
+          <option value="0" data-name="UTC">UTC</option>
+          <option value="2" data-name="CEST" selected>Spain / Central Europe (CEST +02)</option>
+          <option value="1" data-name="BST">UK (BST +01)</option>
+          <option value="1" data-name="WEST / Morocco">Portugal / Morocco (+01)</option>
+          <option value="1" data-name="WAT">Algeria / Tunisia (+01)</option>
+          <option value="3" data-name="EEST / Arabia">Egypt / Arabia (+03)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card" id="sky-card">
+      <h2>🌗 The view from here</h2>
+      <canvas id="sky" width="320" height="320" role="img" aria-label="Schematic view of the Moon crossing the Sun"></canvas>
+      <input type="range" id="skySlider" min="0" max="1000" value="500" aria-label="Local eclipse progress" />
+      <div class="sky-meta">
+        <span id="sky-time">—</span>
+        <span id="sky-cov">—</span>
+      </div>
+      <p class="hint">Drag the slider to scrub through the eclipse as seen from the selected
+      location. Disk sizes and coverage are to scale; orientation is schematic.</p>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  Computed live from NASA/GSFC Besselian elements (F.&nbsp;Espenak) for the
+  <a href="https://eclipse.gsfc.nasa.gov/SEbeselm/SEbeselm2001/SE2027Aug02Tbeselm.html" target="_blank" rel="noopener">2&nbsp;August&nbsp;2027 eclipse</a>.
+  Educational approximations only — verify critical plans against official sources.
+  <br>© 2026 Søren Riis · Released under the <a href="LICENSE">MIT License</a>.
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="eclipse-2027.js"></script>
+<script src="app-2027.js"></script>
+</body>
+</html>
