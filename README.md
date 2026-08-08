@@ -4,13 +4,10 @@ A separate, local-first interactive web app for exploring the **total solar ecli
 2 August 2027**, with a particular focus on **southern Spain**. Click anywhere on the map
 to calculate local eclipse circumstances, or animate the Moon's shadow along the path.
 
-## Project status
+## Published project
 
-This version is for **local review only**. It has not been published and has no GitHub
-remote. After approval, the intended separate repository and Pages address are:
-
-- Repository: `SR123/eclipse-2027`
-- GitHub Pages: `https://sr123.github.io/eclipse-2027/`
+- Repository: <https://github.com/SR123/eclipse-2027>
+- GitHub Pages: <https://sr123.github.io/eclipse-2027/>
 
 The existing `eclipse-2026` project is not modified by this app.
 
